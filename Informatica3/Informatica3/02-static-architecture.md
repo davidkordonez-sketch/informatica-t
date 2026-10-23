@@ -1,6 +1,5 @@
 # 02 — Arquitectura Estática
 
-> Define **qué componentes existen** y cómo se relacionan. Todas las clases usadas en `03-dynamic-architecture.md` aparecen aquí. Los diagramas están en Mermaid (se renderizan en GitHub, VS Code con extensión Mermaid o https://mermaid.live para exportar a PNG).
 
 ## 1. Diagrama de componentes
 
