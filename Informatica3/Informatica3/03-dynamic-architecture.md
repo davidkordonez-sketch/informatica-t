@@ -1,6 +1,6 @@
 # 03 — Arquitectura Dinámica
 
-> Describe **cómo interactúan** los componentes definidos en `02-static-architecture.md`. Todo participante es una clase de ese documento y todo mensaje HTTP coincide con `04-api-contract.md`.
+
 
 Topología de referencia usada en los ejemplos: la de `06-test-spec.md` (nodos A–F; A→D por `delay` = `[A,B,D]`, costo 20).
 
