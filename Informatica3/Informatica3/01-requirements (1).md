@@ -300,9 +300,3 @@ Formato único: `{"error": {"code": "...", "message": "...", "details": {}}}`
 | `FORWARDING_LOG_FILE` | `data/forwarding_log.jsonl` | Router | Archivo del log de reenvíos |
 
 ---
-
-## 9. Registro de cambios
-| Versión | Fecha | Cambio | Motivo | Artefactos afectados |
-|---|---|---|---|---|
-| 1.0 | 2026-10-20 | Línea base de la Sesión 1 | Congelación de especificaciones | 01–06 |
-| 1.0 | 2026-10-23 | Correcciones de consistencia: casos de uso (1.6), A-09 ampliada, A-13, códigos internos (§7), `ErrorHandler`, 422→400 | Revisión cruzada de 01–06 | 01, 02, 03, 04, 05, 06 |
