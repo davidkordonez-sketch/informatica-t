@@ -5,10 +5,9 @@
 | Curso | Informática para Telecomunicaciones |
 | Proyecto | Simulación SDN a nivel de aplicación (Controller + Router) |
 | Equipo | Estudiante A (Controller) · Estudiante B (Router) |
-| Versión | 1.0 (línea base de la Sesión 1) |
 | Fecha | 2026-10-20 |
-| Estado | Borrador para congelar al cierre de la Sesión 1 |
-
+| Versión | 0.9 (en revisión; pasa a 1.0 al congelar) |
+| Estado | Borrador: se congela cuando ambos integrantes confirmen la consistencia |
 ---
 
 ## 1. Introducción
@@ -46,7 +45,19 @@ Protocolos reales (OpenFlow, BGP/OSPF), tráfico de red real, autenticación/aut
 | Versión de topología | Entero que parte en 1 y aumenta con cada fallo/restablecimiento exitoso. |
 | DAO | *Data Access Object*: abstracción que encapsula la lectura/escritura de datos. |
 | Trace | Registro salto a salto de la simulación de reenvío. |
+### 1.6 Casos de uso
 
+| ID | Caso de uso | Actor | Flujo principal | Flujo alterno / error | Requisitos |
+|---|---|---|---|---|---|
+| UC-01 | Iniciar el Controller y cargar la topología | Administrador | El Controller lee el JSON vía `TopologyDAO` y queda `topology_loaded: true`. | Archivo inexistente o inválido: estado `degraded`, el proceso sigue vivo. | FR-01, FR-02, NFR-05 |
+| UC-02 | Consultar la topología activa | Cliente / Administrador | `GET /topology` devuelve nodos, enlaces y estado. | Topología no disponible: 503. | FR-05 |
+| UC-03 | Consultar una ruta según una métrica | Cliente / Router | `GET /route` devuelve ruta, costo y versión. | 400 parámetro inválido; 404 nodo o ruta ausente. | FR-03, FR-04, FR-05 |
+| UC-04 | Simular la caída de un enlace | Administrador | `POST /links/fail` y la versión aumenta. | 404 enlace inexistente; 409 ya fallado. | FR-06 |
+| UC-05 | Restablecer un enlace | Administrador | `POST /links/restore` y la versión aumenta. | 404 enlace inexistente; 409 ya activo. | FR-06 |
+| UC-06 | Enviar un paquete y obtener el trace | Cliente | `POST /packets`: el Router pide la ruta, simula el reenvío y registra. | Fallo al registrar: 200 con `log_persisted: false`. | FR-07, FR-08, FR-10 |
+| UC-07 | Enviar un paquete a un destino inalcanzable o con nodo inválido | Cliente | El Router responde `UNREACHABLE` (200) o propaga 404 `NODE_NOT_FOUND`. | n/a | FR-03, FR-08, FR-09 |
+| UC-08 | Enviar un paquete con el Controller caído | Cliente | El Router responde 503 y sigue vivo. | n/a | FR-07, FR-09, NFR-11 |
+| UC-09 | Verificar la disponibilidad | Cliente | `GET /health` en cada app. | Controller sin topología: `degraded`. | FR-05 |
 ---
 
 ## 2. Supuestos y decisiones sobre ambigüedades
@@ -63,10 +74,11 @@ El enunciado deja puntos abiertos. Cada decisión queda **congelada** con esta e
 | A-06 | ¿Fallar un enlace ya caído, o restaurar uno activo? | `409 Conflict` (`LINK_ALREADY_FAILED` / `LINK_ALREADY_ACTIVE`). Enlace inexistente: `404 LINK_NOT_FOUND`. | FR-06 |
 | A-07 | ¿Se persiste el estado de fallos? | **No.** Vive en memoria; al reiniciar el Controller todo vuelve al estado del JSON. | FR-06 |
 | A-08 | ¿Origen = destino? | Ruta válida `[src]` con costo 0. | FR-03 |
-| A-09 | ¿Quién valida que los nodos existan? | **Solo el Controller.** El Router solo valida el formato de entrada (campos presentes y no vacíos). | FR-07, FR-09 |
-| A-10 | ¿Qué se registra en el log de reenvíos? | Todo `ForwardingResult` generado (`DELIVERED` o `UNREACHABLE`) como una línea JSON (JSON Lines). Las solicitudes rechazadas por error (400/404/503) no generan resultado y no se registran. | FR-10 |
+| A-09 | ¿Quién valida que los nodos existan? | **Solo el Controller.** El Router solo valida el **formato** de entrada: campos presentes y no vacíos, y `metric` dentro de los valores permitidos (`delay`, `bandwidth`, `loss`). Lo hace el esquema `PacketRequest` (capa Vista), no un servicio; el Router nunca evalúa costos ni existencia de nodos. | FR-07, FR-09 |
+| A-10 | ¿Qué se registra en el log de reenvíos? | Todo `ForwardingResult` generado (`DELIVERED` o `UNREACHABLE`) como una línea JSON (JSON Lines). Las solicitudes rechazadas por error (400/404/503) no generan resultado y no se registran Justificación: el log registra lo que ocurrió con el paquete en la red simulada; un error de solicitud o del Controller significa que el reenvío nunca ocurrió y queda en los registros HTTP de la aplicación.. | FR-10 |
 | A-11 | ¿Quién valida la topología? | El **DAO solo lee y parsea**; la **validación semántica** (nodos referenciados, rangos) la hace `TopologyService` (lógica de dominio, no de persistencia). | FR-01, FR-02 |
 | A-12 | ¿Qué hace el Router con un fallo del Controller a mitad del reenvío? | Fuera de alcance: la ruta se consulta **una vez por paquete** y se simula sobre esa instantánea (`topology_version`). | FR-08 |
+| A-13 | ¿Cuándo se carga la topología? | Se intenta al **arrancar** el Controller (`ensure_loaded`). Si falla, el proceso sigue vivo (`degraded`) y se **reintenta** en la siguiente petición que requiera la topología. | FR-01, FR-09 |
 
 ---
 
@@ -267,6 +279,13 @@ Formato único: `{"error": {"code": "...", "message": "...", "details": {}}}`
 | 503 | `CONTROLLER_UNAVAILABLE` | Conexión rechazada o respuesta 5xx del Controller | Router |
 | 503 | `CONTROLLER_TIMEOUT` | El Controller excede el timeout | Router |
 | 500 | `INTERNAL_ERROR` | Excepción no prevista (proceso sigue activo) | Ambas |
+### Códigos internos (no se devuelven tal cual por HTTP)
+
+| Código interno | Origen | Traducción HTTP |
+|---|---|---|
+| `INVALID_TOPOLOGY` | `TopologyService.validate` | La topología queda sin cargar, `/health` = `degraded` y los endpoints que la requieren responden 503 `TOPOLOGY_UNAVAILABLE`. |
+| `INVALID_LINK_METRICS` | `LinkCostCalculator` | Se detecta al validar la topología; mismo tratamiento que `INVALID_TOPOLOGY`. |
+| `PERSISTENCE_ERROR` | `ForwardingLogDAO` | No es error HTTP: el Router responde 200 con `log_persisted: false` y un aviso en `warnings`. |
 
 ---
 
@@ -287,3 +306,4 @@ Formato único: `{"error": {"code": "...", "message": "...", "details": {}}}`
 | Versión | Fecha | Cambio | Motivo | Artefactos afectados |
 |---|---|---|---|---|
 | 1.0 | 2026-10-20 | Línea base de la Sesión 1 | Congelación de especificaciones | 01–06 |
+| 1.0 | 2026-10-23 | Correcciones de consistencia: casos de uso (1.6), A-09 ampliada, A-13, códigos internos (§7), `ErrorHandler`, 422→400 | Revisión cruzada de 01–06 | 01, 02, 03, 04, 05, 06 |
