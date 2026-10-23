@@ -14,6 +14,7 @@ flowchart LR
             PC["PacketController"]
             RHC["Router HealthController"]
             RSCH["Schemas: PacketRequest, ForwardingResultResponse, ErrorResponse"]
+            REH["ErrorHandler"]
         end
         subgraph RS["Servicios de dominio"]
             FS["ForwardingService"]
@@ -44,6 +45,7 @@ flowchart LR
             TPC["TopologyController"]
             CHC["Controller HealthController"]
             CSCH["Schemas: RouteResponse, TopologyResponse, LinkRequest, ErrorResponse"]
+             CEH["ErrorHandler"]
         end
         subgraph CS["Servicios de dominio"]
             RS1["RoutingService"]
@@ -51,7 +53,7 @@ flowchart LR
             LCC["LinkCostCalculator"]
         end
         subgraph CM["Modelos"]
-            CMOD["Node, Link, Topology, Route, Metric, LinkStatus"]
+            CMOD["Link, Topology, Route, Metric, LinkStatus"]
         end
         subgraph CD["Capa DAO - limite de persistencia"]
             TDI["TopologyDAO - interfaz"]
@@ -69,8 +71,10 @@ flowchart LR
     FILE1[("topology.json")]
     FILE2[("forwarding_log.jsonl")]
 
-    CLI -->|"POST /packets"| PC
-    CLI -->|"POST /links/fail, /links/restore, GET /topology"| LKC
+     CLI -->|"POST /links/fail, /links/restore"| LKC
+    CLI -->|"GET /topology"| TPC
+    CLI -->|"GET /health"| CHC
+    CLI -->|"GET /health"| RHC
     HCC -->|"HTTP GET /route"| RTC
     JTD --> FILE1
     JLD --> FILE2
@@ -235,8 +239,13 @@ classDiagram
         DELIVERED
         UNREACHABLE
     }
+   %% src, dst y metric se agregan porque el JSON de 04 y el log los incluyen
+    %% (necesarios también cuando route es null, es decir en UNREACHABLE)
     class ForwardingResult {
         +str packet_id
+        +str src
+        +str dst
+        +str metric
         +ForwardingStatus status
         +RouteInfo route
         +list~HopRecord~ trace
@@ -297,8 +306,71 @@ classDiagram
     PacketController --> ForwardingService
     PacketController ..> PacketRequest
     PacketController ..> ForwardingResultResponse
+| `ErrorHandler` | Controlador (transversal) | Vive en `exceptions.py`. Traduce `DomainError` al código HTTP y al formato único de error, convierte `RequestValidationError` (422 de FastAPI) en 400 `INVALID_PARAMETER` y captura lo imprevisto como 500 `INTERNAL_ERROR`. Sin lógica de negocio. |
 ```
+## 3.1 Manejo de errores (ambas apps)
 
+Cada app tiene su `exceptions.py` con las excepciones de dominio y el `ErrorHandler` que las traduce a HTTP (regla R6). Las excepciones **no** llevan lógica HTTP; el único que conoce los códigos de estado es el `ErrorHandler`.
+
+```mermaid
+classDiagram
+    direction TB
+
+    %% Base común: cada excepción lleva el código y los detalles del JSON de error (formato único de 01 §7)
+    class DomainError {
+        <<abstract>>
+        +str code
+        +str message
+        +dict details
+    }
+
+    %% Controller (controller/exceptions.py)
+    class InvalidParameterError
+    class NodeNotFoundError
+    class RouteNotFoundError
+    class LinkNotFoundError
+    class LinkAlreadyFailedError
+    class LinkAlreadyActiveError
+    class TopologyUnavailableError
+    class InvalidTopologyError
+    class InvalidLinkMetricsError
+
+    %% Router (router/exceptions.py)
+    %% InvalidParameterError, NodeNotFoundError y RouteNotFoundError también existen aquí:
+    %% HttpControllerClient los lanza al traducir las respuestas del Controller
+    class ControllerUnavailableError
+    class ControllerTimeoutError
+    class PersistenceError
+
+    class ErrorHandler {
+        +register(app) void
+        +handle_domain_error(error) ErrorResponse
+        +handle_validation_error(error) ErrorResponse
+        +handle_unexpected(error) ErrorResponse
+    }
+    class ErrorResponse {
+        <<schema>>
+        +str code
+        +str message
+        +dict details
+    }
+
+    DomainError <|-- InvalidParameterError
+    DomainError <|-- NodeNotFoundError
+    DomainError <|-- RouteNotFoundError
+    DomainError <|-- LinkNotFoundError
+    DomainError <|-- LinkAlreadyFailedError
+    DomainError <|-- LinkAlreadyActiveError
+    DomainError <|-- TopologyUnavailableError
+    DomainError <|-- InvalidTopologyError
+    DomainError <|-- InvalidLinkMetricsError
+    DomainError <|-- ControllerUnavailableError
+    DomainError <|-- ControllerTimeoutError
+    DomainError <|-- PersistenceError
+
+    ErrorHandler ..> DomainError : traduce a HTTP
+    ErrorHandler ..> ErrorResponse : crea
+```
 ## 4. Responsabilidades de las clases
 
 ### Controller
@@ -311,6 +383,7 @@ classDiagram
 | `TopologyService` | Servicio | Carga bajo demanda (`ensure_loaded`), valida la topología, mantiene estado de enlaces y versión, construye el grafo ponderado activo. |
 | `LinkCostCalculator` | Servicio | Convierte atributos del enlace en costo ≥ 0 según la métrica; decide si el enlace es utilizable. |
 | `TopologyDAO` / `JsonTopologyDAO` | DAO | Leer y parsear el JSON; no valida semántica. |
+| `ErrorHandler` | Controlador (transversal) | Vive en `exceptions.py`. Traduce `DomainError` al código HTTP y al formato único de error, convierte `RequestValidationError` (422 de FastAPI) en 400 `INVALID_PARAMETER` y captura lo imprevisto como 500 `INTERNAL_ERROR`. Sin lógica de negocio. |
 
 ### Router
 | Clase | Capa | Responsabilidad |
@@ -321,7 +394,7 @@ classDiagram
 | `ForwardingService` | Servicio | Pide la ruta vía `RouteProvider`, simula el reenvío salto a salto, arma el resultado y lo guarda con el DAO; captura `PersistenceError`. |
 | `RouteProvider` / `HttpControllerClient` | Cliente REST | Interfaz y adaptador HTTP hacia `GET /route`; traduce fallos de red en `ControllerUnavailableError` / `ControllerTimeoutError`. |
 | `ForwardingLogDAO` / `JsonLinesForwardingLogDAO` | DAO | Guardar y recuperar resultados de reenvío. |
-
+| `ErrorHandler` | Controlador (transversal) | Vive en `exceptions.py`. Traduce `DomainError` al código HTTP y al formato único de error, convierte `RequestValidationError` (422 de FastAPI) en 400 `INVALID_PARAMETER` y captura lo imprevisto como 500 `INTERNAL_ERROR`. Sin lógica de negocio. |
 ## 5. Mapeo MVC por aplicación
 
 | Capa MVC | Controller | Router |
@@ -341,6 +414,7 @@ La **raíz de composición** (`main.py` de cada app) es el único lugar que cono
 |---|---|
 | Controller | `JsonTopologyDAO(TOPOLOGY_FILE)` → `TopologyService(dao, LinkCostCalculator())` → `RoutingService(topology_service)` → controladores |
 | Router | `HttpControllerClient(CONTROLLER_URL, CONTROLLER_TIMEOUT_S)` y `JsonLinesForwardingLogDAO(FORWARDING_LOG_FILE)` → `ForwardingService(route_provider, log_dao)` → `PacketController` |
+**Carga de la topología (decisión A-13).** `main.py` llama a `TopologyService.ensure_loaded()` al arrancar. Si falla (archivo inexistente, JSON corrupto o topología inválida), el proceso sigue vivo en estado `degraded` y cada petición posterior que necesite la topología vuelve a llamar a `ensure_loaded()` (reintento). Por eso la Secuencia 1 muestra la carga como `opt`: solo ocurre si todavía no hay topología cargada.
 
 - Se inyecta por **constructor**; los controladores reciben servicios mediante `Depends` de FastAPI.
 - En pruebas se inyecta un `FakeTopologyDAO` / `FakeRouteProvider` / `FakeForwardingLogDAO` **sin tocar** `RoutingService` ni `ForwardingService` (NFR-07, NFR-09; TC-08, TC-09).
@@ -355,7 +429,7 @@ La **raíz de composición** (`main.py` de cada app) es el único lugar que cono
 | R4: Toda dependencia entre servicio y almacenamiento pasa por una interfaz (`TopologyDAO`, `ForwardingLogDAO`, `RouteProvider`). | Revisión + TC-08, TC-09 |
 | R5: Solo `main.py` instancia clases concretas de DAO y cliente. | Revisión |
 | R6: Los errores de dominio son excepciones propias traducidas a HTTP en un manejador central, no en los servicios. | TC-11 |
-
+| R7: `TopologyService` protege su estado mutable (estado de enlaces y versión) con un `threading.Lock`, porque FastAPI atiende los endpoints síncronos en hilos distintos. | Revisión de código |
 ## 8. Estructura de directorios propuesta
 
 ```text
