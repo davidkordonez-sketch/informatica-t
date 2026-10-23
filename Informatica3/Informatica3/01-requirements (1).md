@@ -62,7 +62,6 @@ Protocolos reales (OpenFlow, BGP/OSPF), tráfico de red real, autenticación/aut
 
 ## 2. Supuestos y decisiones sobre ambigüedades
 
-El enunciado deja puntos abiertos. Cada decisión queda **congelada** con esta especificación; cualquier cambio posterior se registra en la sección 9.
 
 | ID | Ambigüedad | Decisión | Afecta |
 |---|---|---|---|
