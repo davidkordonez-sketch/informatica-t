@@ -306,7 +306,7 @@ classDiagram
     PacketController --> ForwardingService
     PacketController ..> PacketRequest
     PacketController ..> ForwardingResultResponse
-| `ErrorHandler` | Controlador (transversal) | Vive en `exceptions.py`. Traduce `DomainError` al código HTTP y al formato único de error, convierte `RequestValidationError` (422 de FastAPI) en 400 `INVALID_PARAMETER` y captura lo imprevisto como 500 `INTERNAL_ERROR`. Sin lógica de negocio. |
+
 ```
 ## 3.1 Manejo de errores (ambas apps)
 
