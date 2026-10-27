@@ -72,6 +72,18 @@ curl -X POST localhost:8000/links/restore -H "content-type: application/json" -d
 curl "localhost:8000/route?src=A&dst=D&metric=bandwidth"
 ```
 
+### Consola visual (recomendado para la demo)
+
+Con las dos apps corriendo, abre **<http://localhost:8000/>** en el navegador. Verás la topología dibujada y podrás:
+
+- **Ubicarte en un router:** clic en un router (origen, marcado «Tú») y clic en otro (destino). La consola pide `GET /route` y dibuja la ruta en azul, con el costo de cada salto.
+- **Cambiar la métrica** (Retardo / Ancho de banda / Pérdida): la ruta se recalcula y las etiquetas de los enlaces cambian.
+- **Fallar o restablecer un enlace:** clic en el enlace o botón «Fallar» / «Restablecer» en la lista (`POST /links/fail|restore`). Si el enlace estaba en la ruta, la consola muestra la ruta nueva y la anterior en naranja; si no queda camino, el destino se marca en rojo.
+- **Enviar un paquete por el Router** (`POST /packets` al puerto 8001): un punto naranja recorre el `trace` salto a salto.
+- **Ver la actividad:** cada llamada a la API queda en el panel «Actividad»; la versión de la topología y el estado de ambas apps se actualizan solos (también si haces cambios desde `/docs` o `scripts/demo.py`).
+
+La consola es parte de la **Vista** (`controller/ui/`): no calcula rutas ni costos, solo dibuja lo que responde la API. La sirve `StaticFiles` desde `controller/main.py`, y el Router permite llamadas desde ella mediante CORS (variable `ROUTER_CORS_ORIGINS`, por defecto `http://localhost:8000,http://127.0.0.1:8000`).
+
 ### Demo guiada
 
 Con las dos apps corriendo: `python scripts/demo.py`. Ejecuta el comportamiento en vivo obligatorio: paquete A→D, fallo de B–D y nueva ruta, destino inalcanzable, restablecimiento, métrica alternativa, nodo inexistente, conflicto 409 y las pruebas TC-08/TC-09 con DAO falso.
@@ -81,13 +93,13 @@ Con las dos apps corriendo: `python scripts/demo.py`. Ejecuta el comportamiento 
 Desde la carpeta `Sesion2`:
 
 ```bash
-pytest -v | tee tests/test-results.txt   # todas (26 casos, 76 pruebas con parametrizaciones)
+pytest -v | tee tests/test-results.txt   # todas (27 casos, 79 pruebas con parametrizaciones)
 pytest -m mandatory -v                   # solo las 11 obligatorias (TC-01…TC-09, TC-12, TC-24)
 pytest -m "not integration and not perf" # rápidas, sin procesos reales
 python tests/fixtures/generate_large_topology.py   # regenera el fixture de TC-18 (no hace falta)
 ```
 
-**Resultado registrado** (`tests/test-results.txt`): **76 passed, 0 failed** (Linux y Windows).
+**Resultado registrado** (`tests/test-results.txt`): **79 passed, 0 failed** (Linux y Windows).
 
 | TC | Nivel | Qué verifica | Archivo | Estado |
 |---|---|---|---|---|
@@ -116,6 +128,7 @@ python tests/fixtures/generate_large_topology.py   # regenera el fixture de TC-1
 | TC-23 | Recomendada | Delegación MVC con servicios espía | `tests/architecture/test_mvc_delegation.py` | ✅ |
 | TC-24 | Obligatoria | Persistencia de `UNREACHABLE`; errores sin `save()` | `tests/router/test_forwarding_service.py` | ✅ |
 | TC-25 | Recomendada | Respuestas inesperadas del Controller (502/503/400) | `tests/router/test_http_controller_client.py` | ✅ |
+| TC-27 | Recomendada | Consola visual servida en `/ui/`, solo usa la API REST; CORS del Router | `tests/controller/test_ui_console.py` | ✅ |
 | TC-26 | Extensión | Escritura parcial, fallo de `fsync`, escrituras concurrentes | `tests/router/test_log_dao_robustness.py` | ✅ |
 
 **Sensibilidad de las pruebas:** se inyectaron a propósito dos defectos (un `import networkx` en un controlador y un `UNREACHABLE` sin `save()`); TC-12 y TC-24 fallaron como se esperaba y luego se revirtió el cambio.

@@ -9,6 +9,7 @@ import logging
 from typing import Optional
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from router.clients.http_controller_client import HttpControllerClient
 from router.clients.route_provider import RouteProvider
@@ -34,6 +35,13 @@ def create_app(
     app.state.settings = settings
     app.state.forwarding_service = forwarding_service
     ErrorHandler().register(app)
+    # Permite que la consola visual del Controller (otro puerto) envíe paquetes desde el navegador.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=list(settings.cors_origins),
+        allow_methods=["GET", "POST"],
+        allow_headers=["content-type"],
+    )
     app.include_router(packet_controller.router)
     app.include_router(health_controller.router)
     return app

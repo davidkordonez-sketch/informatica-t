@@ -275,6 +275,7 @@ Se documentan en detalle las **11 pruebas obligatorias**: TC-01 a TC-09, que son
 | TC-22 | FR-07, FR-10 | Sustitución en el Router | Resultados idénticos con fakes y con adaptadores reales | Igual | Aprobado | `test_tc22_…` (3) |
 | TC-23 | NFR-01, NFR-03 | Delegación MVC con servicios espía | Cada endpoint llama una vez al servicio y devuelve su valor sin cambios | Igual en `/route`, `/links/fail` y `/packets` | Aprobado | `test_tc23_…` (3) |
 | TC-25 | FR-07, FR-09 | Respuestas inesperadas del Controller | 502/503/400 según la tabla; 0 escrituras en el log | Igual en 16 casos (incluye fallos de red: conexión rechazada, timeout de conexión y timeout de lectura) | Aprobado | `test_tc25_…` (17) |
+| TC-27 | FR-05 (Vista) | Consola visual del Controller | Se sirve en `/ui/`; solo usa la API REST; el Router acepta su origen y rechaza otros | Igual; además se probó en un navegador real (Chromium) con ambas apps corriendo | Aprobado | `tests/controller/test_ui_console.py` (3) |
 | TC-26 | FR-10, NFR-06 | Escritura parcial y fallo de `fsync` | `PersistenceError`; fragmento aislado; `find_all` lo omite | Igual; además, 50 escrituras simultáneas dan 50 líneas completas | Aprobado | `test_tc26_…` (3) |
 
 ## 6. Matriz de trazabilidad de requisitos
@@ -305,9 +306,9 @@ Entre paréntesis van las pruebas de soporte. La clasificación completa (primar
 
 | Total de casos de prueba | Aprobados | Fallidos | Pendientes | Porcentaje de éxito |
 |---|---|---|---|---|
-| 26 casos (76 pruebas automáticas contando las variantes parametrizadas) | 26 casos / 76 pruebas | 0 | 0 | 100 % |
+| 27 casos (79 pruebas automáticas contando las variantes parametrizadas) | 27 casos / 79 pruebas | 0 | 0 | 100 % |
 
-Por nivel: obligatorias 11/11 (21 pruebas), recomendadas 10/10 (42 pruebas) y extensión 5/5 (13 pruebas). Tiempo total de ejecución: ≈ 8 s.
+Por nivel: obligatorias 11/11 (21 pruebas), recomendadas 11/11 (45 pruebas) y extensión 5/5 (13 pruebas). Tiempo total de ejecución: ≈ 8 s.
 
 ## 8. Informe final de pruebas
 

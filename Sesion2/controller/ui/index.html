@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SDN Controller · Consola</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!--
+    Consola visual del Controller (capa VISTA de MVC).
+    No calcula rutas ni costos: solo consume la API REST (GET /topology, GET /route,
+    POST /links/fail, POST /links/restore, GET /health) y, para el paquete animado,
+    POST /packets del Router.
+  -->
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="6" r="4"/><circle cx="6" cy="25" r="4"/><circle cx="26" cy="25" r="4"/>
+        <path d="M16 10 L7.5 21.5 M16 10 L24.5 21.5 M10 25 H22"/>
+      </svg>
+      <div>
+        <h1>SDN Controller</h1>
+        <p>Consola de topología, rutas y enlaces</p>
+      </div>
+    </div>
+    <div class="status" aria-live="polite">
+      <span class="pill" id="ctrl-health"><i></i>Controller</span>
+      <span class="pill" id="router-health"><i></i>Router</span>
+      <span class="pill version" id="topo-version" title="Versión de la topología">versión —</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="canvas-card">
+      <div class="toolbar">
+        <div class="segmented" role="radiogroup" aria-label="Métrica">
+          <button type="button" data-metric="delay" class="active" role="radio" aria-checked="true">Retardo</button>
+          <button type="button" data-metric="bandwidth" role="radio" aria-checked="false">Ancho de banda</button>
+          <button type="button" data-metric="loss" role="radio" aria-checked="false">Pérdida</button>
+        </div>
+        <div class="legend">
+          <span><b class="lg-origin"></b>Origen</span>
+          <span><b class="lg-dest"></b>Destino</span>
+          <span><b class="lg-path"></b>Ruta</span>
+          <span><b class="lg-failed"></b>Enlace caído</span>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <svg id="graph" viewBox="0 0 900 560" role="img" aria-label="Topología de la red">
+          <g id="links"></g>
+          <g id="nodes"></g>
+          <g id="overlay"></g>
+        </svg>
+        <div class="canvas-empty" id="canvas-empty" hidden>
+          <strong>Topología no disponible</strong>
+          <span id="canvas-empty-msg">El Controller está en modo degradado.</span>
+        </div>
+      </div>
+      <p class="hint" id="hint">Haz clic en un router para ubicarte en él (origen). Luego haz clic en otro para elegir el destino.</p>
+    </section>
+
+    <aside class="side">
+      <section class="card">
+        <header><h2>Ruta</h2><span class="tag">GET /route</span></header>
+        <div class="row">
+          <label>Origen<select id="src"></select></label>
+          <button type="button" class="icon-btn" id="swap" title="Intercambiar origen y destino" aria-label="Intercambiar">⇄</button>
+          <label>Destino<select id="dst"></select></label>
+        </div>
+        <div class="row buttons">
+          <button type="button" class="primary" id="calc">Calcular ruta</button>
+          <button type="button" id="clear">Limpiar</button>
+        </div>
+        <div class="result" id="route-result" aria-live="polite">
+          <p class="muted">Elige un origen y un destino.</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <header><h2>Enviar paquete</h2><span class="tag">POST /packets · Router</span></header>
+        <p class="muted small">El Router le pide la ruta al Controller y la recorre salto a salto.</p>
+        <div class="row">
+          <label class="grow">URL del Router<input id="router-url" value="" spellcheck="false"></label>
+        </div>
+        <div class="row buttons">
+          <button type="button" class="primary" id="send">Enviar paquete</button>
+        </div>
+        <div class="result" id="packet-result" aria-live="polite"></div>
+      </section>
+
+      <section class="card">
+        <header><h2>Enlaces</h2><span class="tag">POST /links/fail · /restore</span></header>
+        <p class="muted small">Haz clic en un enlace del dibujo o usa la lista.</p>
+        <ul class="links" id="link-list"></ul>
+      </section>
+
+      <section class="card">
+        <header><h2>Actividad</h2><button type="button" class="link-btn" id="clear-log">Borrar</button></header>
+        <ol class="log" id="log"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

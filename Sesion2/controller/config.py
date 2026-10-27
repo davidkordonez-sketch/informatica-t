@@ -7,6 +7,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 DEFAULT_TOPOLOGY_FILE = BASE_DIR / "data" / "topology.json"
+UI_DIR = BASE_DIR / "ui"  # consola visual (HTML/CSS/JS)
 
 
 @dataclass(frozen=True)

@@ -57,7 +57,7 @@ El sistema sigue una arquitectura centralizada. El Router no calcula rutas: por 
 | Módulo del algoritmo de enrutamiento | `RoutingService` (Dijkstra) + `LinkCostCalculator` (métricas) |
 | Módulo de reenvío | `ForwardingService`: simulación salto a salto |
 | Módulo de registro (log) | `ForwardingLogDAO`: guarda cada resultado en `forwarding_log.jsonl` |
-| Interfaz | API REST (con documentación automática en `/docs`) y línea de comandos para arrancar las apps y la demo |
+| Interfaz | Consola visual en `http://localhost:8000/` (topología, rutas, enlaces y paquete animado), API REST con documentación automática en `/docs` y línea de comandos para arrancar las apps |
 
 ## 4. Requisitos funcionales
 
@@ -304,6 +304,10 @@ sequenceDiagram
     PC-->>Cli: 200 con trace y log_persisted true
 ```
 
+### 13.1 Consola visual (capa Vista)
+
+`controller/ui/` (HTML, CSS y JavaScript) dibuja la topología como grafo y permite operar el Controller con clics: elegir origen y destino (`GET /route`), cambiar de métrica, fallar y restablecer enlaces (`POST /links/fail|restore`) y enviar un paquete por el Router (`POST /packets`), animando el `trace` salto a salto. Respeta MVC: **no calcula rutas ni costos**, solo muestra lo que responde la API (TC-27). La distribución de los nodos en pantalla es solo de dibujo y no afecta al enrutamiento.
+
 ## 14. Estrategia de pruebas
 
 | Área de prueba | Descripción | Casos |
@@ -316,12 +320,13 @@ sequenceDiagram
 | Arquitectura MVC/DAO | AST, sustitución de interfaces, delegación con espías y revisión manual | TC-08, TC-12, TC-13, TC-14, TC-21, TC-22, TC-23, RA-01…RA-10 |
 | Integración | Dos procesos reales comunicándose por HTTP | TC-16 |
 | No funcionales | Concurrencia y rendimiento | TC-20, TC-18 |
+| Consola visual | Se sirve en `/ui/`, solo usa la API REST y el Router acepta su origen (CORS) | TC-27 |
 
-Resultado: 26 de 26 casos (76 pruebas automáticas) aprobados. El detalle está en `docs/02-test-plan.md`.
+Resultado: 27 de 27 casos (79 pruebas automáticas) aprobados. El detalle está en `docs/02-test-plan.md`.
 
 ## 15. Conclusiones
 
-**¿Se implementó el sistema con éxito?** Sí. Las dos aplicaciones funcionan como procesos independientes, se comunican por HTTP/JSON y cumplen los 10 requisitos funcionales y los 12 no funcionales, con 76 de 76 pruebas aprobadas y la demo en vivo ejecutada (`demo-evidence/demo-log.txt`).
+**¿Se implementó el sistema con éxito?** Sí. Las dos aplicaciones funcionan como procesos independientes, se comunican por HTTP/JSON y cumplen los 10 requisitos funcionales y los 12 no funcionales, con 79 de 79 pruebas aprobadas y la demo en vivo ejecutada (`demo-evidence/demo-log.txt`).
 
 **¿El Controller calcula correctamente las rutas?** Sí. Dijkstra elige el camino óptimo con las tres métricas (TC-01, TC-02), recalcula al fallar y restablecer enlaces (TC-03, TC-04) y siempre devuelve una ruta coherente con su versión de topología, incluso con consultas y cambios simultáneos (TC-20).
 
