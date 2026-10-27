@@ -7,10 +7,9 @@
 | Curso | Informática para Telecomunicaciones |
 | Programa | Ingeniería de Telecomunicaciones |
 | Proyecto | Controlador y Enrutador SDN (simulación a nivel de aplicación) |
-| Nombre del equipo | _completar_ |
-| Integrantes | Estudiante A (Controller): _completar_ · Estudiante B (Router): _completar_ |
-| Profesor | _completar_ |
-| Fecha | 2026-10-26 |
+| Integrantes | Paula Andrea Montero, Gabriel Navia, David Ordoñez |
+| Profesor | Oscar Mauricio Caicedo Rendon |
+| Fecha | 2026-10-27 |
 | Versión | 1.0 |
 
 ## 1. Visión del producto
