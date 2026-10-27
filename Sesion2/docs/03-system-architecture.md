@@ -317,11 +317,11 @@ sequenceDiagram
 | Integración | Dos procesos reales comunicándose por HTTP | TC-16 |
 | No funcionales | Concurrencia y rendimiento | TC-20, TC-18 |
 
-Resultado: 26 de 26 casos (73 pruebas automáticas) aprobados. El detalle está en `docs/02-test-plan.md`.
+Resultado: 26 de 26 casos (76 pruebas automáticas) aprobados. El detalle está en `docs/02-test-plan.md`.
 
 ## 15. Conclusiones
 
-**¿Se implementó el sistema con éxito?** Sí. Las dos aplicaciones funcionan como procesos independientes, se comunican por HTTP/JSON y cumplen los 10 requisitos funcionales y los 12 no funcionales, con 73 de 73 pruebas aprobadas y la demo en vivo ejecutada (`demo-evidence/demo-log.txt`).
+**¿Se implementó el sistema con éxito?** Sí. Las dos aplicaciones funcionan como procesos independientes, se comunican por HTTP/JSON y cumplen los 10 requisitos funcionales y los 12 no funcionales, con 76 de 76 pruebas aprobadas y la demo en vivo ejecutada (`demo-evidence/demo-log.txt`).
 
 **¿El Controller calcula correctamente las rutas?** Sí. Dijkstra elige el camino óptimo con las tres métricas (TC-01, TC-02), recalcula al fallar y restablecer enlaces (TC-03, TC-04) y siempre devuelve una ruta coherente con su versión de topología, incluso con consultas y cambios simultáneos (TC-20).
 

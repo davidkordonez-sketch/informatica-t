@@ -40,7 +40,14 @@ class HttpControllerClient(RouteProvider):
     def get_route(self, src: str, dst: str, metric: str) -> RouteInfo:
         try:
             response = self._client.get("/route", params={"src": src, "dst": dst, "metric": metric})
-        except httpx.TimeoutException as error:
+        except httpx.ConnectTimeout as error:
+            # No se pudo ni establecer la conexión (en Windows un puerto cerrado se manifiesta así,
+            # en Linux como ConnectError): el Controller NO está disponible, no está "lento".
+            raise ControllerUnavailableError(
+                "Controller is unavailable", {"reason": "ConnectTimeout", "timeout_s": self._timeout_s}
+            ) from error
+        except httpx.TimeoutException as error:  # conectó, pero no respondió a tiempo
+
             raise ControllerTimeoutError(
                 "Controller did not answer in time", {"timeout_s": self._timeout_s}
             ) from error

@@ -39,7 +39,7 @@ Como **[tipo de usuario]**, quiero **[funcionalidad]**, para **[beneficio]**.
 
 ## 5. Backlog de requisitos funcionales
 
-Estado al 2026-10-26: implementado y verificado con las pruebas indicadas (`tests/test-results.txt`: 73 pruebas aprobadas).
+Estado al 2026-10-26: implementado y verificado con las pruebas indicadas (`tests/test-results.txt`: 76 pruebas aprobadas).
 
 | ID | Historia de usuario | Prioridad | Criterios de aceptación | Sprint | Estado |
 |---|---|---|---|---|---|
@@ -157,7 +157,7 @@ Se organizan tres sprints. El Sprint 1 corresponde a la Sesión 1; los Sprints 2
 | Criterio | ¿Cumplido? |
 |---|---|
 | La funcionalidad está implementada en Python | Sí: `controller/` y `router/` |
-| El código se probó con éxito | Sí: 73 de 73 pruebas aprobadas (`tests/test-results.txt`) |
+| El código se probó con éxito | Sí: 76 de 76 pruebas aprobadas (`tests/test-results.txt`) |
 | Se documentaron las entradas y salidas esperadas | Sí: `04-api-contract.md` y criterios de aceptación de `01-requirements.md` |
 | Se cumplieron los criterios de aceptación | Sí: cada FR está vinculado a sus pruebas (sección 5) |
 | El código se integró con el resto del sistema | Sí: TC-16 con dos procesos reales y `demo-evidence/demo-log.txt` |

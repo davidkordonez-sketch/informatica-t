@@ -274,7 +274,7 @@ Se documentan en detalle las **11 pruebas obligatorias**: TC-01 a TC-09, que son
 | TC-21 | FR-01, NFR-02 | Sustitución de `TopologyDAO` | Resultados idénticos con el DAO falso y con el DAO JSON | Igual | Aprobado | `test_tc21_…` (4) |
 | TC-22 | FR-07, FR-10 | Sustitución en el Router | Resultados idénticos con fakes y con adaptadores reales | Igual | Aprobado | `test_tc22_…` (3) |
 | TC-23 | NFR-01, NFR-03 | Delegación MVC con servicios espía | Cada endpoint llama una vez al servicio y devuelve su valor sin cambios | Igual en `/route`, `/links/fail` y `/packets` | Aprobado | `test_tc23_…` (3) |
-| TC-25 | FR-07, FR-09 | Respuestas inesperadas del Controller | 502/503/400 según la tabla; 0 escrituras en el log | Igual en 13 casos | Aprobado | `test_tc25_…` (14) |
+| TC-25 | FR-07, FR-09 | Respuestas inesperadas del Controller | 502/503/400 según la tabla; 0 escrituras en el log | Igual en 16 casos (incluye fallos de red: conexión rechazada, timeout de conexión y timeout de lectura) | Aprobado | `test_tc25_…` (17) |
 | TC-26 | FR-10, NFR-06 | Escritura parcial y fallo de `fsync` | `PersistenceError`; fragmento aislado; `find_all` lo omite | Igual; además, 50 escrituras simultáneas dan 50 líneas completas | Aprobado | `test_tc26_…` (3) |
 
 ## 6. Matriz de trazabilidad de requisitos
@@ -305,9 +305,9 @@ Entre paréntesis van las pruebas de soporte. La clasificación completa (primar
 
 | Total de casos de prueba | Aprobados | Fallidos | Pendientes | Porcentaje de éxito |
 |---|---|---|---|---|
-| 26 casos (73 pruebas automáticas contando las variantes parametrizadas) | 26 casos / 73 pruebas | 0 | 0 | 100 % |
+| 26 casos (76 pruebas automáticas contando las variantes parametrizadas) | 26 casos / 76 pruebas | 0 | 0 | 100 % |
 
-Por nivel: obligatorias 11/11 (21 pruebas), recomendadas 10/10 (39 pruebas) y extensión 5/5 (13 pruebas). Tiempo total de ejecución: ≈ 8 s.
+Por nivel: obligatorias 11/11 (21 pruebas), recomendadas 10/10 (42 pruebas) y extensión 5/5 (13 pruebas). Tiempo total de ejecución: ≈ 8 s.
 
 ## 8. Informe final de pruebas
 
@@ -319,4 +319,5 @@ Las 26 pruebas definidas en el plan se implementaron y aprobaron, incluidas TC-0
 | ISS-02 | El guion de la demo arrancaba sin esperar a que los servidores respondieran y fallaba con `ConnectError`. | Baja | FR-05…FR-08 | Corregido: espera activa sobre `GET /health` antes de la demo. |
 | ISS-03 | `demo-evidence/` solo tiene logs en texto; el enunciado pide imágenes o video. | Media | — (entregable) | Pendiente: grabar la demo en el equipo del grupo. |
 | ISS-04 | La revisión arquitectónica RA-01…RA-10 está preparada, pero falta la confirmación de cada integrante. | Media | NFR-01…NFR-03 | Pendiente: firmar `docs/architecture-review.md`. |
+| ISS-06 | Al ejecutar en **Windows**, TC-07a y TC-19 fallaron: con el Controller apagado, Windows no rechaza la conexión al instante sino que la reintenta, se agotaba el timeout de 1 s y el Router respondía `CONTROLLER_TIMEOUT` en vez de `CONTROLLER_UNAVAILABLE`. | Media | FR-07, FR-09, NFR-11 | Corregido: `HttpControllerClient` trata `ConnectTimeout` (no se pudo conectar) como `CONTROLLER_UNAVAILABLE` y solo un `ReadTimeout` (conectó pero no respondió) como `CONTROLLER_TIMEOUT`. Se agregaron 3 pruebas en TC-25. |
 | ISS-05 | `tests/perf-environment.txt` refleja el entorno donde se ejecutó TC-18, no el equipo del grupo. | Baja | NFR-10 | Pendiente: ejecutar TC-18 en el equipo del grupo e indicar si estaba conectado a la corriente. |

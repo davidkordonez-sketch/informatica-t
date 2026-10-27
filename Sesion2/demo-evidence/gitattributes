@@ -1,0 +1,3 @@
+# El fixture de TC-18 se verifica por SHA-256: Git no debe cambiar sus saltos de línea
+tests/fixtures/large_topology_200n_1000l.json binary
+*.py text eol=lf
