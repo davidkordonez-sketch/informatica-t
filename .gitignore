@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Entornos virtuales e IDE
+.venv/
+venv/
+.idea/
+.vscode/
+
+# Log generado al ejecutar el Router (la evidencia de la demo está en demo-evidence/)
+Sesion2/router/data/forwarding_log.jsonl
