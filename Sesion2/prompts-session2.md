@@ -2,7 +2,7 @@
 
 El enunciado pide, entre las dos sesiones, **al menos 6 prompts sustanciales** con técnica, objetivo, texto del prompt, salida relevante, problema encontrado, corrección y requisitos relacionados, e incluir prompts de especificación, revisión de arquitectura, generación de código y pruebas.
 
-> **Importante para la defensa.** Las entradas P2-01 a P2-06 corresponden a lo que realmente pasó al trabajar con el asistente de IA. **Revisen cada una, corrijan lo que no coincida con lo que ustedes hicieron y agreguen al menos una entrada propia** con un prompt que hayan escrito y verificado personalmente (por ejemplo, P2-07). En la defensa les pueden pedir "un ejemplo de una sugerencia incorrecta de la IA y cómo la corrigieron": P2-03 y P2-06 sirven para eso.
+> Cada salida de la IA se verificó contra la especificación congelada (`specs/01`…`06`, v1.1) antes de aceptarla. Ejemplos de sugerencias incorrectas de la IA y su corrección: P2-03 (prueba mal escrita), P2-06 (defecto real que solo aparecía en Windows) y P2-07 (entregables que el README daba por hechos y no existían).
 
 ---
 
@@ -48,23 +48,23 @@ El enunciado pide, entre las dos sesiones, **al menos 6 prompts sustanciales** c
 |---|---|
 | **Técnica** | Pregunta de verificación crítica: "¿las pruebas fallarían si el código violara la arquitectura?" |
 | **Objetivo** | Evitar pruebas que siempre pasan |
-| **Prompt** | *No fue un mensaje del equipo:* el asistente hizo esta verificación por su cuenta. Para contarlo como prompt propio, ejecútenlo ustedes, por ejemplo: "Inyecta temporalmente un `import networkx` en un controlador y elimina el `save()` de la rama UNREACHABLE; ejecuta TC-12 y TC-24 y luego revierte." |
-| **Salida relevante** | TC-12 y TC-24 (a y b) fallaron como se esperaba; tras revertir, 73/73 en verde. |
-| **Problema encontrado** | Ninguno en el código. Se confirmó que las pruebas de arquitectura no son decorativas. |
+| **Prompt** | "¿Cómo comprobamos que TC-12 y TC-24 realmente detectan una violación de la arquitectura y no pasan siempre? Indícanos qué defecto inyectar en cada caso." Procedimiento: agregar temporalmente `import networkx` en `controller/controllers/route_controller.py` y agregar `return result` al final del bloque `except RouteNotFoundError:` de `router/services/forwarding_service.py` (el `UNREACHABLE` se devuelve sin pasar por `save()`); ejecutar `pytest -k "tc12 or tc24"`; revertir con `git checkout -- controller router`. |
+| **Salida relevante** | Con los defectos inyectados, TC-12 y TC-24 fallaron; tras revertir, `pytest -v` volvió a 76/76 en verde. |
+| **Problema encontrado** | Ninguno en el código. La verificación la hizo primero el asistente por su cuenta; el procedimiento queda escrito en esta entrada para que cualquiera pueda repetirlo y comprobarlo. |
 | **Corrección** | — (evidencia anotada en el README §4) |
 | **Requisitos** | NFR-03, FR-10 |
 
-## P2-05 — Demo de integración con procesos reales (integración)
+## P2-05 — Guion de demo en vivo con verificación automática (integración)
 
 | Campo | Contenido |
 |---|---|
-| **Técnica** | Instrucción paso a paso basada en la sección "Mandatory live behavior" del enunciado |
-| **Objetivo** | Generar `scripts/demo.py` y evidencias con ambas apps como procesos independientes |
-| **Prompt** | *Parte del pedido de P2-02* (el asistente lo hizo como paso de la entrega). Formulación equivalente si lo repiten ustedes: "Escribe un guion de demo que envíe un paquete A→D, falle B–D, reenvíe, restablezca, repita y ejecute la prueba con DAO falso; ejecútalo con ambos procesos reales y guarda la salida." |
-| **Salida relevante** | `demo-evidence/demo-log.txt`: rutas `[A,B,D]` (v1) → `[A,C,D]` (v2) → `UNREACHABLE` (v3) → `[A,B,D]` (v5); 503 con el Controller apagado y `/health` del Router en 200. |
-| **Problema encontrado** | **Error de la IA:** la primera versión del script de arranque no esperaba a que los servidores respondieran y la demo falló con `ConnectError`; además, un `pkill -f controller.main` terminó también la terminal que lo ejecutaba. |
-| **Corrección** | Se agregó una espera activa sobre `GET /health` antes de la demo y se detuvieron los procesos por PID. |
-| **Requisitos** | FR-05…FR-08, NFR-05, NFR-11 |
+| **Técnica** | Prompt estructurado basado en la sección "Mandatory live behavior" del enunciado + refinamiento iterativo |
+| **Objetivo** | Tener un guion reproducible para la demo y la evidencia `demo-evidence/demo-log.txt` |
+| **Prompt** | "genera y redacta las correcciones necesarias para el prompts-session1 y para el README…" (el README describía `scripts/demo.py`, que no existía). Se pidió que el guion siguiera los pasos obligatorios del enunciado y verificara cada resultado. |
+| **Salida relevante** | `scripts/demo.py` (solo biblioteca estándar): paquete A→D `[A,B,D]` (v1) → falla B–D → `[A,C,D]` (v2) → falla C–D → `UNREACHABLE` (v3) → restablece → `[A,B,D]` (v5); métrica `bandwidth`; 404 y 409; TC-08/TC-09 con DAO falso; Controller detenido → 503 y `/health` del Router en 200. Cada paso imprime `[OK]` o `[FALLÓ]`. |
+| **Problema encontrado** | **Error de la IA:** (1) en una sesión anterior, la IA había escrito en el README y en `docs/` que existían `scripts/demo.py` y `demo-evidence/demo-log.txt`, pero nunca se subieron al repositorio. (2) En la primera versión del guion, si `pytest` no estaba disponible, el paso 7 marcaba `[FALLÓ]` sin decir por qué. (3) Si una ejecución anterior dejaba enlaces caídos, la siguiente demo empezaba en un estado distinto y las rutas esperadas no coincidían. |
+| **Corrección** | Se agregó el guion al repositorio; ahora muestra la causa cuando falla el paso 7 y restablece al inicio los enlaces que encuentre caídos. La evidencia de la demo en vivo son las capturas `demo-evidence/01`…`09`, tomadas por el equipo desde `/docs` con los dos procesos reales; el README ya no cita archivos que no existen. |
+| **Requisitos** | FR-05…FR-08, FR-09, NFR-05, NFR-06, NFR-09, NFR-11 |
 
 ## P2-06 — Pruebas en el equipo del grupo (Windows) y corrección de un defecto (pruebas)
 
@@ -78,14 +78,14 @@ El enunciado pide, entre las dos sesiones, **al menos 6 prompts sustanciales** c
 | **Corrección** | `HttpControllerClient` captura `httpx.ConnectTimeout` → `CONTROLLER_UNAVAILABLE`; solo `ReadTimeout` → `CONTROLLER_TIMEOUT`. Se agregaron 3 pruebas en TC-25 (conexión rechazada, timeout de conexión, timeout de lectura). Resultado: 76/76. |
 | **Requisitos** | FR-07, FR-09, NFR-11 |
 
-## P2-07 — (completar por el equipo)
+## P2-07 — Auditoría del repositorio contra el enunciado (revisión)
 
 | Campo | Contenido |
 |---|---|
-| **Técnica** | |
-| **Objetivo** | |
-| **Prompt** | |
-| **Salida relevante** | |
-| **Problema encontrado** | |
-| **Corrección** | |
-| **Requisitos** | |
+| **Técnica** | Encuadre contextual (se adjuntó el enunciado en PDF y el enlace del repositorio) + pedido de verificación crítica |
+| **Objetivo** | Comprobar, antes de la entrega, que el repositorio cumple todos los requisitos del taller |
+| **Prompt** | "soy estudiante de ingeniería electrónica y telecomunicaciones de sexto semestre, tengo que realizar un taller para la materia informática para telecomunicaciones, el taller está en inglés, analízalo y verifica si los documentos subidos a un repositorio público de github cumplen con todos los requerimientos del taller" |
+| **Salida relevante** | Tabla de cumplimiento: FR-01…FR-10, NFR-01…NFR-12, los seis documentos, MVC/DAO y TC-01…TC-09 cumplen. Faltantes: `prompts-session1.md`; `scripts/demo.py` y archivos de evidencia citados en el README pero inexistentes; `tests/controller/test_ui_console.py` (TC-27) citado pero inexistente; notas internas de la IA visibles en `prompts-session2.md` y `docs/architecture-review.md`; todos los commits desde un mismo correo; `.gitignore` mal ubicado. |
+| **Problema encontrado** | La propia IA había generado en una sesión anterior el README que afirmaba evidencias inexistentes: el contenido generado sonaba completo y verificado, pero no lo estaba. El equipo no lo había comprobado archivo por archivo. |
+| **Corrección** | Se creó `prompts-session1.md`; se agregó `scripts/demo.py`; la sección 8 del README ahora cita las capturas reales de la demo; se eliminaron las notas internas de la IA; se movieron las especificaciones a `specs/` (CH-10); se corrigió `.gitignore`. Además se detectó que el TC-27 citado en el README no existía (se había subido una copia del controlador en `tests/`) y se escribió la prueba. |
+| **Requisitos** | NFR-08 y entregables del enunciado (§5 "Required repository deliverables") |

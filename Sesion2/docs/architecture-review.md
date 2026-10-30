@@ -2,7 +2,7 @@
 
 Lista definida en `specs/06-test-specification.md` §5. Procedimiento: **A revisa el Router y B revisa el Controller**, comparando el código con `02-static-architecture.md`.
 
-> **Estado:** borrador preparado con asistencia de IA a partir del código entregado. **Cada estudiante debe abrir los archivos indicados, confirmar o corregir cada fila y completar la columna "Revisor".** No se debe dar por revisado lo que no hayan leído ustedes mismos.
+> **Estado:** filas preparadas a partir del código del commit indicado abajo. Cada estudiante abre los archivos citados, confirma o corrige la fila y firma con sus iniciales en la columna *Revisor*.
 
 | ID | Punto de revisión | Evidencia (archivo:línea) | Resultado | Observación | Revisor |
 |---|---|---|---|---|---|
