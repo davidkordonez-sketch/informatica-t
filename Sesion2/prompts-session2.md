@@ -24,7 +24,7 @@ El enunciado pide, entre las dos sesiones, **al menos 6 prompts sustanciales** c
 |---|---|
 | **Técnica** | Encuadre contextual con especificación congelada (el prompt remite a 01–06 v1.1) + restricciones explícitas de arquitectura (MVC, DAO, DI, Router sin Dijkstra) |
 | **Objetivo** | Implementar el Controller y el Router siguiendo exactamente las clases de `02` y el contrato de `04` |
-| **Prompt** | "comencemos a hacer esto… iniciemos con la sección 2, ayúdame a hacer los códigos" (con los documentos 01–06 v1.1 ya en el contexto de la conversación) |
+| **Prompt** | "Actúa como desarrollador de software, en base a los documentos de la sesión 1 genera el código de controlador y router, seguiendo estrictamente los requerimientos de cada cliente de la sesión 1, por el momento solo genera el código funcional" (con los documentos 01–06 v1.1 ya en el contexto de la conversación) |
 | **Salida relevante** | `controller/` y `router/` con la estructura de `02` §8; `TopologyService` con `_write_lock` e instantáneas `frozen`; `ForwardingService._persist` en ambas ramas; `HttpControllerClient` con la tabla de 04 §3. |
 | **Problema encontrado** | Verificación manual contra `02`: los nombres y responsabilidades coinciden, pero se agregaron parámetros que la especificación no tenía (`transport`, `opener`, `clock`) y `JsonTopologyDAO` puede lanzar `InvalidTopologyError` por errores de estructura. |
 | **Corrección** | Se aceptaron (no cambian el contrato) y se documentaron como decisiones de implementación en el README §6, en lugar de cambiar los requisitos. |
