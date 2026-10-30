@@ -94,7 +94,7 @@ Esfuerzo estimado en **minutos de la Sesión 2** (108 min en total, ver `05-impl
 | PB-16 | FR-05…FR-08 | Integración con dos procesos reales y demo (T-15) | A y B | 10 min | Sprint 3 | Hecho |
 | PB-17 | — | Reserva para corregir defectos | A y B | 12 min | Sprint 3 | Usado |
 | PB-18 | NFR-01 | Revisión arquitectónica cruzada RA-01…RA-10 (T-18) | A y B | 4 min | Sprint 3 | Pendiente de firma |
-| PB-19 | NFR-08 | README, `test-results.txt`, evidencias y `prompts-session2.md` (T-16, T-17) | A y B | 8 min | Sprint 3 | Pendiente: capturas y prompt propio |
+| PB-19 | NFR-08 | README, `test-results.txt`, evidencias y `prompts-session2.md` (T-16, T-17) | A y B | 8 min | Sprint 3 | Hecho: capturas en `demo-evidence/`, prompts P2-05 y P2-07 |
 
 ## 8. Planificación de sprints
 
@@ -149,7 +149,7 @@ Se organizan tres sprints. El Sprint 1 corresponde a la Sesión 1; los Sprints 2
 | T-15 | FR-05…FR-08 | Integración y demo con dos procesos reales (TC-16) | A y B | 10 min | Hecho |
 | T-14, T-18 | NFR-01…NFR-03 | Pruebas de arquitectura y revisión cruzada RA | A y B | 8 min | Pruebas hechas; revisión pendiente de firma |
 | — | — | Corrección de defectos (reserva) | A y B | 12 min | Usado |
-| T-16, T-17 | NFR-08 | README, resultados, evidencias y prompts | A y B | 8 min | Pendiente: capturas y prompt propio |
+| T-16, T-17 | NFR-08 | README, resultados, evidencias y prompts | A y B | 8 min | Hecho |
 
 ## 9. Definición de hecho (Definition of Done)
 
@@ -159,5 +159,5 @@ Se organizan tres sprints. El Sprint 1 corresponde a la Sesión 1; los Sprints 2
 | El código se probó con éxito | Sí: 79 de 79 pruebas aprobadas (`tests/test-results.txt`) |
 | Se documentaron las entradas y salidas esperadas | Sí: `04-api-contract.md` y criterios de aceptación de `01-requirements.md` |
 | Se cumplieron los criterios de aceptación | Sí: cada FR está vinculado a sus pruebas (sección 5) |
-| El código se integró con el resto del sistema | Sí: TC-16 con dos procesos reales y `demo-evidence/demo-log.txt` |
+| El código se integró con el resto del sistema | Sí: TC-16 con dos procesos reales y las capturas de `demo-evidence/` (01–09) |
 | La funcionalidad se demostró al profesor | Pendiente: se hará en la defensa |

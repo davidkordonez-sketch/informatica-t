@@ -326,7 +326,7 @@ Resultado: 27 de 27 casos (79 pruebas automáticas) aprobados. El detalle está 
 
 ## 15. Conclusiones
 
-**¿Se implementó el sistema con éxito?** Sí. Las dos aplicaciones funcionan como procesos independientes, se comunican por HTTP/JSON y cumplen los 10 requisitos funcionales y los 12 no funcionales, con 79 de 79 pruebas aprobadas y la demo en vivo ejecutada (`demo-evidence/demo-log.txt`).
+**¿Se implementó el sistema con éxito?** Sí. Las dos aplicaciones funcionan como procesos independientes, se comunican por HTTP/JSON y cumplen los 10 requisitos funcionales y los 12 no funcionales, con 79 de 79 pruebas aprobadas y la demo en vivo ejecutada (capturas en `demo-evidence/`).
 
 **¿El Controller calcula correctamente las rutas?** Sí. Dijkstra elige el camino óptimo con las tres métricas (TC-01, TC-02), recalcula al fallar y restablecer enlaces (TC-03, TC-04) y siempre devuelve una ruta coherente con su versión de topología, incluso con consultas y cambios simultáneos (TC-20).
 

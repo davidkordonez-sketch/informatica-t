@@ -24,6 +24,9 @@ controller/                 router/
 ├── dao/  TopologyDAO, JsonTopologyDAO
 ├── exceptions.py           tests/  controller/ router/ architecture/ integration/ performance/ fixtures/
 └── data/topology.json      docs/ (01-scrum, 02-test-plan, 03-architecture, architecture-review) · demo-evidence/ · scripts/demo.py
+
+specs/  01-requirements · 02-static-architecture · 03-dynamic-architecture · 04-api-contract · 05-implementation-plan · 06-test-specification
+prompts-session1.md · prompts-session2.md · README.md
 ```
 
 ## 2. Instalación
@@ -72,6 +75,15 @@ curl -X POST localhost:8000/links/restore -H "content-type: application/json" -d
 curl "localhost:8000/route?src=A&dst=D&metric=bandwidth"
 ```
 
+En Windows PowerShell las comillas simples de `curl` no funcionan igual; usar `Invoke-RestMethod`, la consola visual o la página `/docs` (Swagger UI):
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://localhost:8001/packets -ContentType "application/json" -Body '{"packet_id":"pkt-1","src":"A","dst":"D","metric":"delay"}' | ConvertTo-Json -Depth 5
+Invoke-RestMethod -Method Post -Uri http://localhost:8000/links/fail -ContentType "application/json" -Body '{"node_a":"B","node_b":"D"}'
+Invoke-RestMethod -Method Post -Uri http://localhost:8000/links/restore -ContentType "application/json" -Body '{"node_a":"B","node_b":"D"}'
+Invoke-RestMethod "http://localhost:8000/route?src=A&dst=D&metric=bandwidth"
+```
+
 ### Consola visual (recomendado para la demo)
 
 Con las dos apps corriendo, abre **<http://localhost:8000/>** en el navegador. Verás la topología dibujada y podrás:
@@ -86,7 +98,25 @@ La consola es parte de la **Vista** (`controller/ui/`): no calcula rutas ni cost
 
 ### Demo guiada
 
-Con las dos apps corriendo: `python scripts/demo.py`. Ejecuta el comportamiento en vivo obligatorio: paquete A→D, fallo de B–D y nueva ruta, destino inalcanzable, restablecimiento, métrica alternativa, nodo inexistente, conflicto 409 y las pruebas TC-08/TC-09 con DAO falso.
+Alternativa por línea de comandos a la consola visual. Con las dos apps corriendo, en una tercera terminal (desde `Sesion2`, con el entorno virtual activo):
+
+```bash
+python scripts/demo.py                    # demo completa; al final pide detener el Controller
+python scripts/demo.py --no-interactive   # sin el paso del Controller detenido
+```
+
+Solo usa la biblioteca estándar. Ejecuta y verifica (`[OK]` / `[FALLÓ]`) el comportamiento en vivo obligatorio:
+
+1. Paquete A→D: el Router pide la ruta al Controller → `DELIVERED`, ruta `[A,B,D]`, costo 20.
+2. Falla B–D (enlace usado por la ruta) y reenvía → nueva ruta `[A,C,D]`, costo 25.
+3. Falla también C–D → `UNREACHABLE` (se registra en el log).
+4. Restablece C–D y B–D y repite → vuelve `[A,B,D]`; `GET /route` coincide con el Router.
+5. Métrica alternativa `bandwidth` → `[A,C,D]`, costo 0,02.
+6. Errores controlados: nodo inexistente (404 `NODE_NOT_FOUND`) y enlace ya fallado (409).
+7. TC-08 y TC-09 con DAO falso, sin servidor HTTP.
+8. Controller detenido → 503 `CONTROLLER_UNAVAILABLE` y `GET /health` del Router en 200.
+
+Si una ejecución anterior dejó enlaces caídos, el script los restablece al empezar. La salida se guarda en `demo-evidence/demo-log.txt`. URL distintas: `--controller http://localhost:9000 --router http://localhost:9001`.
 
 ## 4. Pruebas
 
@@ -94,12 +124,13 @@ Desde la carpeta `Sesion2`:
 
 ```bash
 pytest -v | tee tests/test-results.txt   # todas (27 casos, 79 pruebas con parametrizaciones)
+# Windows PowerShell: python -m pytest -v 2>&1 | Out-File -Encoding utf8 tests\test-results.txt
 pytest -m mandatory -v                   # solo las 11 obligatorias (TC-01…TC-09, TC-12, TC-24)
 pytest -m "not integration and not perf" # rápidas, sin procesos reales
 python tests/fixtures/generate_large_topology.py   # regenera el fixture de TC-18 (no hace falta)
 ```
 
-**Resultado registrado** (`tests/test-results.txt`): **79 passed, 0 failed** (Linux y Windows).
+**Resultado registrado** (`tests/test-results.txt`, Windows): **79 passed, 0 failed**.
 
 | TC | Nivel | Qué verifica | Archivo | Estado |
 |---|---|---|---|---|
@@ -128,12 +159,12 @@ python tests/fixtures/generate_large_topology.py   # regenera el fixture de TC-1
 | TC-23 | Recomendada | Delegación MVC con servicios espía | `tests/architecture/test_mvc_delegation.py` | ✅ |
 | TC-24 | Obligatoria | Persistencia de `UNREACHABLE`; errores sin `save()` | `tests/router/test_forwarding_service.py` | ✅ |
 | TC-25 | Recomendada | Respuestas inesperadas del Controller (502/503/400) | `tests/router/test_http_controller_client.py` | ✅ |
-| TC-27 | Recomendada | Consola visual servida en `/ui/`, solo usa la API REST; CORS del Router | `tests/controller/test_ui_console.py` | ✅ |
 | TC-26 | Extensión | Escritura parcial, fallo de `fsync`, escrituras concurrentes | `tests/router/test_log_dao_robustness.py` | ✅ |
+| TC-27 | Recomendada | Consola visual servida en `/ui/`, solo usa la API REST; CORS del Router | `tests/controller/test_ui_console.py` | ✅ |
 
-**Sensibilidad de las pruebas:** se inyectaron a propósito dos defectos (un `import networkx` en un controlador y un `UNREACHABLE` sin `save()`); TC-12 y TC-24 fallaron como se esperaba y luego se revirtió el cambio.
+**Sensibilidad de las pruebas:** se inyectaron a propósito dos defectos (un `import networkx` en un controlador y un `UNREACHABLE` sin `save()`); TC-12 y TC-24 fallaron como se esperaba y luego se revirtió el cambio (procedimiento en `prompts-session2.md`, P2-04).
 
-El entorno de TC-18 queda en `tests/perf-environment.txt`. **Al ejecutar en su propia máquina, ese archivo se regenera; anoten si el portátil estaba conectado a la corriente.**
+El entorno de TC-18 queda en `tests/perf-environment.txt` y se regenera en cada ejecución; el resultado depende del equipo donde se mida.
 
 ## 5. Estado de los requisitos
 
@@ -159,7 +190,7 @@ El entorno de TC-18 queda en `tests/perf-environment.txt`. **Al ejecutar en su p
 | NFR-11 Resiliencia | ✅ Cumplido | TC-19 |
 | NFR-12 Consistencia | ✅ Cumplido | TC-20 |
 
-La revisión arquitectónica manual RA-01…RA-10 está en [`docs/architecture-review.md`](docs/architecture-review.md) y **debe ser confirmada por ambos estudiantes**.
+La revisión arquitectónica manual RA-01…RA-10 está en [`docs/architecture-review.md`](docs/architecture-review.md); cada fila lleva las iniciales del estudiante que la verificó.
 
 ## 6. Decisiones de implementación y diferencias con la especificación
 
@@ -180,12 +211,23 @@ Ninguna cambia el contrato de API ni los requisitos. Se documentan para mantener
 
 ## 8. Evidencias de la demo
 
-- `demo-evidence/demo-log.txt`: salida completa de `scripts/demo.py` con ambas apps como procesos reales, incluida la prueba con DAO falso y el Controller apagado (503 y `/health` 200).
-- `demo-evidence/controller-console.txt` y `router-console.txt`: logs de los dos procesos (se ve cada `GET /route` del Router al Controller).
-- `demo-evidence/forwarding_log-demo.jsonl`: log de reenvíos generado por la demo (`DELIVERED` y `UNREACHABLE`).
-- **Pendiente para el equipo:** agregar capturas de pantalla o un video corto ejecutando la demo en su máquina (el enunciado pide "images/video").
+Capturas en `demo-evidence/`, tomadas el 2026-10-27 desde `/docs` con el Controller y el Router como procesos independientes:
+
+| Archivo | Qué muestra |
+|---|---|
+| `01-paquete-ABD.jpeg` | `POST /packets` A→D: `DELIVERED`, ruta `[A,B,D]` emitida por el Controller (costo 20, versión 1) y trace de 2 saltos. |
+| `02-fallo-BD.png` | `POST /links/fail` B–D: enlace `failed`, `topology_version` 2. |
+| `03-ruta-alternativa-ACD.png` | Nuevo paquete A→D: ruta alternativa `[A,C,D]`, costo 25, versión 2. |
+| `04-restablecer-BD.png` | `POST /links/restore` B–D. |
+| `05-ruta-original-ABD.png` | Tras restablecer, vuelve la ruta `[A,B,D]`. |
+| `06-controller-caido-503.png` | Controller detenido: el Router responde 503 `CONTROLLER_UNAVAILABLE`. |
+| `07-router-sigue-vivo.png` | Con el Controller detenido, `GET /health` del Router sigue respondiendo. |
+| `08-prueba-dao-falso.png` | TC-08 y TC-09 con DAO falso, sin servidor HTTP: 2 passed. |
+| `09-destino-inalcanzable.png` | Paquete A→F (nodo aislado): `UNREACHABLE` con `reason` `ROUTE_NOT_FOUND`, registrado en el log. |
+| `prueba ruta.png` | Otra captura del paquete A→D entregado. |
+| `prueba 76 est.png` | `pytest -v` antes de agregar TC-27: 76 passed. |
 
 ## 9. Registro de IA
 
-- Sesión 1: `../prompts-session1.md`.
+- Sesión 1: [`prompts-session1.md`](prompts-session1.md).
 - Sesión 2: [`prompts-session2.md`](prompts-session2.md).

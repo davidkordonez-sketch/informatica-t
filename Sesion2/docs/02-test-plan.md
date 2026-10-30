@@ -118,7 +118,7 @@ Se documentan en detalle las **11 pruebas obligatorias**: TC-01 a TC-09, que son
 | Resultado esperado | Versión 2; ruta `[A,C,D]` con costo 25; B–D no aparece en la ruta. |
 | Resultado real | Versión 2; `[A,C,D]`, costo 25.0. |
 | Estado | Aprobado |
-| Evidencia | `test_tc03_…`; también en vivo en `demo-evidence/demo-log.txt` (paso 3b) |
+| Evidencia | `test_tc03_…`; también en vivo en `demo-evidence/02-fallo-BD.png` y `03-ruta-alternativa-ACD.png` |
 | Observaciones | — |
 
 ### TC-04: Restablecer un enlace actualiza las rutas
@@ -203,7 +203,7 @@ Se documentan en detalle las **11 pruebas obligatorias**: TC-01 a TC-09, que son
 | Resultado esperado | Rutas correctas; `NODE_NOT_FOUND` para Z; `ROUTE_NOT_FOUND` para F; una sola llamada a `load_topology()`. |
 | Resultado real | Igual al esperado (`load_calls == 1`). |
 | Estado | Aprobado |
-| Evidencia | `test_tc08_…`; se ejecuta en vivo al final de `demo-evidence/demo-log.txt` |
+| Evidencia | `test_tc08_…`; ejecutada en vivo en `demo-evidence/08-prueba-dao-falso.png` |
 | Observaciones | Es la prueba que pide mostrar el enunciado en la demo. |
 
 ### TC-09: ForwardingService con su DAO de log
@@ -318,7 +318,8 @@ Las 26 pruebas definidas en el plan se implementaron y aprobaron, incluidas TC-0
 |---|---|---|---|---|
 | ISS-01 | La prueba TC-26 llamaba dos veces al DAO roto sobre el mismo archivo y esperaba 1 línea corrupta en vez de 2. El defecto estaba en la prueba, no en el DAO. | Baja | FR-10 | Corregido: la segunda llamada usa otro archivo. |
 | ISS-02 | El guion de la demo arrancaba sin esperar a que los servidores respondieran y fallaba con `ConnectError`. | Baja | FR-05…FR-08 | Corregido: espera activa sobre `GET /health` antes de la demo. |
-| ISS-03 | `demo-evidence/` solo tiene logs en texto; el enunciado pide imágenes o video. | Media | — (entregable) | Pendiente: grabar la demo en el equipo del grupo. |
+| ISS-03 | `demo-evidence/` no tenía imágenes ni video, que pide el enunciado; además el README citaba un `demo-log.txt` que no existía. | Media | — (entregable) | Corregido: capturas `01`…`09` de la demo en vivo tomadas en el equipo del grupo; el README solo cita archivos existentes. |
 | ISS-04 | La revisión arquitectónica RA-01…RA-10 está preparada, pero falta la confirmación de cada integrante. | Media | NFR-01…NFR-03 | Pendiente: firmar `docs/architecture-review.md`. |
 | ISS-06 | Al ejecutar en **Windows**, TC-07a y TC-19 fallaron: con el Controller apagado, Windows no rechaza la conexión al instante sino que la reintenta, se agotaba el timeout de 1 s y el Router respondía `CONTROLLER_TIMEOUT` en vez de `CONTROLLER_UNAVAILABLE`. | Media | FR-07, FR-09, NFR-11 | Corregido: `HttpControllerClient` trata `ConnectTimeout` (no se pudo conectar) como `CONTROLLER_UNAVAILABLE` y solo un `ReadTimeout` (conectó pero no respondió) como `CONTROLLER_TIMEOUT`. Se agregaron 3 pruebas en TC-25. |
-| ISS-05 | `tests/perf-environment.txt` refleja el entorno donde se ejecutó TC-18, no el equipo del grupo. | Baja | NFR-10 | Pendiente: ejecutar TC-18 en el equipo del grupo e indicar si estaba conectado a la corriente. |
+| ISS-07 | El README y este plan citaban TC-27 en `tests/controller/test_ui_console.py`, pero el archivo no existía: se había subido `tests/controller/ui_controller.py`, una copia del controlador que pytest no ejecuta. | Media | FR-05 | Corregido: se escribió la prueba TC-27 (3 casos) y se eliminó la copia. |
+| ISS-05 | `tests/perf-environment.txt` refleja el entorno donde se ejecutó TC-18, no el equipo del grupo. | Baja | NFR-10 | Corregido: el archivo se regenera al ejecutar `pytest -v` en el equipo del grupo, junto con `tests/test-results.txt`. |

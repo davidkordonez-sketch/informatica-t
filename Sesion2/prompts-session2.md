@@ -59,7 +59,7 @@ El enunciado pide, entre las dos sesiones, **al menos 6 prompts sustanciales** c
 | Campo | Contenido |
 |---|---|
 | **Técnica** | Prompt estructurado basado en la sección "Mandatory live behavior" del enunciado + refinamiento iterativo |
-| **Objetivo** | Tener un guion reproducible para la demo y la evidencia `demo-evidence/demo-log.txt` |
+| **Objetivo** | Tener un guion reproducible para la demo, que deja su salida en `demo-evidence/demo-log.txt` al ejecutarlo |
 | **Prompt** | "genera y redacta las correcciones necesarias para el prompts-session1 y para el README…" (el README describía `scripts/demo.py`, que no existía). Se pidió que el guion siguiera los pasos obligatorios del enunciado y verificara cada resultado. |
 | **Salida relevante** | `scripts/demo.py` (solo biblioteca estándar): paquete A→D `[A,B,D]` (v1) → falla B–D → `[A,C,D]` (v2) → falla C–D → `UNREACHABLE` (v3) → restablece → `[A,B,D]` (v5); métrica `bandwidth`; 404 y 409; TC-08/TC-09 con DAO falso; Controller detenido → 503 y `/health` del Router en 200. Cada paso imprime `[OK]` o `[FALLÓ]`. |
 | **Problema encontrado** | **Error de la IA:** (1) en una sesión anterior, la IA había escrito en el README y en `docs/` que existían `scripts/demo.py` y `demo-evidence/demo-log.txt`, pero nunca se subieron al repositorio. (2) En la primera versión del guion, si `pytest` no estaba disponible, el paso 7 marcaba `[FALLÓ]` sin decir por qué. (3) Si una ejecución anterior dejaba enlaces caídos, la siguiente demo empezaba en un estado distinto y las rutas esperadas no coincidían. |
