@@ -93,12 +93,12 @@ Esfuerzo estimado en **minutos de la Sesión 2** (108 min en total, ver `05-impl
 | PB-15 | NFR-01…NFR-03 | Pruebas de arquitectura (T-14) | A y B | 4 min | Sprint 3 | Hecho |
 | PB-16 | FR-05…FR-08 | Integración con dos procesos reales y demo (T-15) | A y B | 10 min | Sprint 3 | Hecho |
 | PB-17 | — | Reserva para corregir defectos | A y B | 12 min | Sprint 3 | Usado |
-| PB-18 | NFR-01 | Revisión arquitectónica cruzada RA-01…RA-10 (T-18) | A y B | 4 min | Sprint 3 | Pendiente de firma |
+| PB-18 | NFR-01 | Revisión arquitectónica cruzada RA-01…RA-10 (T-18) | A y B | 4 min | Sprint 3 | Hecho con asistencia de IA (`docs/architecture-review.md`) |
 | PB-19 | NFR-08 | README, `test-results.txt`, evidencias y `prompts-session2.md` (T-16, T-17) | A y B | 8 min | Sprint 3 | Hecho: capturas en `demo-evidence/`, prompts P2-05 y P2-07 |
 
 ## 8. Planificación de sprints
 
-Se organizan tres sprints. El Sprint 1 corresponde a la Sesión 1; los Sprints 2 y 3 dividen los 108 minutos de la Sesión 2 según los hitos de `05-implementation-plan.md` §1.3.
+Clases: martes 20, viernes 23 y martes 27 de octubre de 2026. Se organizan tres sprints. El Sprint 1 corresponde a la Sesión 1 (especificación, trabajada en las clases del 20 y el 23 de octubre); los Sprints 2 y 3 dividen los 108 minutos de la Sesión 2 según los hitos de `05-implementation-plan.md` §1.3.
 
 **Sprint 1 — Especificación (Sesión 1, terminado)**
 
@@ -106,9 +106,9 @@ Se organizan tres sprints. El Sprint 1 corresponde a la Sesión 1; los Sprints 2
 |---|---|
 | Número de sprint | 1 |
 | Objetivo del sprint | Especificar y congelar requisitos, arquitectura, contrato de API, plan y pruebas, sin escribir código |
-| Fecha de inicio | _completar_ (fecha de la Sesión 1) |
+| Fecha de inicio | 2026-10-20 (Sesión 1) |
 | Fecha de fin | 2026-10-26 (v1.1, tras las correcciones SPDR) |
-| Integrantes | Estudiante A y Estudiante B |
+| Integrantes | Paula Andrea Montero, Gabriel Navia, David Ordoñez |
 
 | ID tarea | Requisito | Descripción | Responsable | Tiempo estimado | Estado |
 |---|---|---|---|---|---|
@@ -123,9 +123,9 @@ Se organizan tres sprints. El Sprint 1 corresponde a la Sesión 1; los Sprints 2
 |---|---|
 | Número de sprint | 2 |
 | Objetivo del sprint | Tener ambas aplicaciones funcionando con MVC/DAO y las 11 pruebas obligatorias en verde (hito H2) |
-| Fecha de inicio | _completar_ (fecha de la Sesión 2) |
-| Fecha de fin | _completar_ |
-| Integrantes | Estudiante A y Estudiante B |
+| Fecha de inicio | 2026-10-27 (Sesión 2, clase del 27 de octubre) |
+| Fecha de fin | 2026-10-27 |
+| Integrantes | Paula Andrea Montero, Gabriel Navia, David Ordoñez |
 
 | ID tarea | Requisito | Descripción | Responsable | Tiempo estimado | Estado |
 |---|---|---|---|---|---|
@@ -140,14 +140,14 @@ Se organizan tres sprints. El Sprint 1 corresponde a la Sesión 1; los Sprints 2
 |---|---|
 | Número de sprint | 3 |
 | Objetivo del sprint | Integrar los dos procesos, ejecutar la demo, corregir defectos y entregar con evidencias |
-| Fecha de inicio | _completar_ |
-| Fecha de fin | _completar_ |
-| Integrantes | Estudiante A y Estudiante B |
+| Fecha de inicio | 2026-10-27 |
+| Fecha de fin | 2026-10-30 (correcciones finales del repositorio) |
+| Integrantes | Paula Andrea Montero, Gabriel Navia, David Ordoñez |
 
 | ID tarea | Requisito | Descripción | Responsable | Tiempo estimado | Estado |
 |---|---|---|---|---|---|
 | T-15 | FR-05…FR-08 | Integración y demo con dos procesos reales (TC-16) | A y B | 10 min | Hecho |
-| T-14, T-18 | NFR-01…NFR-03 | Pruebas de arquitectura y revisión cruzada RA | A y B | 8 min | Pruebas hechas; revisión pendiente de firma |
+| T-14, T-18 | NFR-01…NFR-03 | Pruebas de arquitectura y revisión cruzada RA | A y B | 8 min | Hecho: pruebas en verde y revisión RA 10/10 OK con asistencia de IA |
 | — | — | Corrección de defectos (reserva) | A y B | 12 min | Usado |
 | T-16, T-17 | NFR-08 | README, resultados, evidencias y prompts | A y B | 8 min | Hecho |
 

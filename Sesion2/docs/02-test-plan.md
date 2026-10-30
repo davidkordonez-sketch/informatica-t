@@ -7,9 +7,8 @@
 | Curso | Informática para Telecomunicaciones |
 | Programa | Ingeniería de Telecomunicaciones |
 | Proyecto | Controlador y Enrutador SDN (simulación a nivel de aplicación) |
-| Nombre del equipo | _completar_ |
-| Integrantes | Estudiante A (Controller): _completar_ · Estudiante B (Router): _completar_ |
-| Profesor | _completar_ |
+| Integrantes | Paula Andrea Montero, Gabriel Navia, David Ordoñez |
+| Profesor | Oscar Mauricio Caicedo Rendon |
 | Fecha | 2026-10-26 |
 | Versión | 1.0 |
 
@@ -37,8 +36,8 @@ Verificar que el sistema SDN cumple los requisitos definidos en `01-requirements
 
 | Elemento | Entorno donde se registraron los resultados | Entorno del equipo (completar al ejecutar) |
 |---|---|---|
-| Sistema operativo | Linux 6.18 (x86_64) | _ej. Windows 11_ |
-| Versión de Python | 3.13.17 | _completar_ |
+| Sistema operativo | Linux 6.18 (x86_64) | Windows (portátil de Gabriel Navia) |
+| Versión de Python | 3.13.17 | 3.14.5 (pytest 9.2.0); resultado: 79 de 79 aprobadas, `tests/test-results.txt` |
 | Protocolo de comunicación | HTTP/1.1 (REST) con JSON | igual |
 | Librerías usadas | FastAPI 0.161.1, Uvicorn 0.54.0, Pydantic 2.13.5, NetworkX 3.7, httpx 0.28.1, pytest 9.1.1 | `pip install -r requirements.txt` |
 | Número de aplicaciones Router | 1 | 1 |
@@ -292,7 +291,7 @@ Se documentan en detalle las **11 pruebas obligatorias**: TC-01 a TC-09, que son
 | FR-08 | Simulación del reenvío | TC-06, TC-07, TC-23 (+ TC-24) | Aprobado |
 | FR-09 | Manejo de errores | TC-07, TC-11, TC-24, TC-25 | Aprobado |
 | FR-10 | Registro mediante DAO | TC-09, TC-15, TC-24, TC-26 | Aprobado |
-| NFR-01…NFR-03 | MVC, DAO, separación de lógica | TC-12, TC-13, TC-23 + revisión RA | Aprobado (revisión RA pendiente de firma) |
+| NFR-01…NFR-03 | MVC, DAO, separación de lógica | TC-12, TC-13, TC-23 + revisión RA | Aprobado (revisión RA 10/10 OK) |
 | NFR-04, NFR-05 | Contrato y configurabilidad | TC-11, TC-16, TC-19 | Aprobado |
 | NFR-06 | Robustez | TC-07, TC-15, TC-17, TC-19 | Aprobado |
 | NFR-07, NFR-09 | Inyección de dependencias y testabilidad | TC-08, TC-09, TC-21, TC-22 | Aprobado |
@@ -319,7 +318,7 @@ Las 26 pruebas definidas en el plan se implementaron y aprobaron, incluidas TC-0
 | ISS-01 | La prueba TC-26 llamaba dos veces al DAO roto sobre el mismo archivo y esperaba 1 línea corrupta en vez de 2. El defecto estaba en la prueba, no en el DAO. | Baja | FR-10 | Corregido: la segunda llamada usa otro archivo. |
 | ISS-02 | El guion de la demo arrancaba sin esperar a que los servidores respondieran y fallaba con `ConnectError`. | Baja | FR-05…FR-08 | Corregido: espera activa sobre `GET /health` antes de la demo. |
 | ISS-03 | `demo-evidence/` no tenía imágenes ni video, que pide el enunciado; además el README citaba un `demo-log.txt` que no existía. | Media | — (entregable) | Corregido: capturas `01`…`09` de la demo en vivo tomadas en el equipo del grupo; el README solo cita archivos existentes. |
-| ISS-04 | La revisión arquitectónica RA-01…RA-10 está preparada, pero falta la confirmación de cada integrante. | Media | NFR-01…NFR-03 | Pendiente: firmar `docs/architecture-review.md`. |
+| ISS-04 | La revisión arquitectónica RA-01…RA-10 estaba preparada pero sin ejecutar sobre el código final. | Media | NFR-01…NFR-03 | Corregido: revisión ejecutada con asistencia de IA sobre el commit `fca0b96` (10/10 OK); se actualizaron las líneas de RA-05 y se agregó la consola visual a RA-01, RA-02 y RA-03. Ver `docs/architecture-review.md`. |
 | ISS-06 | Al ejecutar en **Windows**, TC-07a y TC-19 fallaron: con el Controller apagado, Windows no rechaza la conexión al instante sino que la reintenta, se agotaba el timeout de 1 s y el Router respondía `CONTROLLER_TIMEOUT` en vez de `CONTROLLER_UNAVAILABLE`. | Media | FR-07, FR-09, NFR-11 | Corregido: `HttpControllerClient` trata `ConnectTimeout` (no se pudo conectar) como `CONTROLLER_UNAVAILABLE` y solo un `ReadTimeout` (conectó pero no respondió) como `CONTROLLER_TIMEOUT`. Se agregaron 3 pruebas en TC-25. |
 | ISS-07 | El README y este plan citaban TC-27 en `tests/controller/test_ui_console.py`, pero el archivo no existía: se había subido `tests/controller/ui_controller.py`, una copia del controlador que pytest no ejecuta. | Media | FR-05 | Corregido: se escribió la prueba TC-27 (3 casos) y se eliminó la copia. |
 | ISS-05 | `tests/perf-environment.txt` refleja el entorno donde se ejecutó TC-18, no el equipo del grupo. | Baja | NFR-10 | Corregido: el archivo se regenera al ejecutar `pytest -v` en el equipo del grupo, junto con `tests/test-results.txt`. |
