@@ -1,12 +1,12 @@
-TC-18 run: 2026-10-27T16:36:01+00:00
-commit: 0373dac
+TC-18 run: 2026-10-30T06:41:31+00:00
+commit: a22de5e
 fixture: large_topology_200n_1000l.json sha256=fde3ec88fd2ec45d5804b568f874e251e158d6d2ae63fdb7bfeed6e877ce600c
-cpu: AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD | cores: 16 | ram: unknown
-os: Windows-11-10.0.26300-SP0 | python: 3.14.7
-packages: fastapi=0.162.0, starlette=1.10.0, pydantic=2.14.1, networkx=3.7, httpx=0.28.1, uvicorn=0.54.0
+cpu: Intel64 Family 6 Model 151 Stepping 2, GenuineIntel | cores: 12 | ram: unknown
+os: Windows-11-10.0.26200-SP0 | python: 3.14.5
+packages: fastapi=0.162.0, starlette=1.10.0, pydantic=2.14.2, networkx=3.7, httpx=0.28.1, uvicorn=0.54.0
 power: not recorded automatically (indicar manualmente si el portátil estaba conectado)
 protocol: warmup=10, measured=100, repetitions=3, in-process TestClient, nearest-rank p95
-run 1: p50=26.80 ms  p95=69.17 ms  max=106.41 ms
-run 2: p50=34.48 ms  p95=60.73 ms  max=96.89 ms
-run 3: p50=25.09 ms  p95=59.44 ms  max=93.50 ms
-median p95 = 60.73 ms (limit 200.0 ms) -> PASS
+run 1: p50=4.98 ms  p95=5.77 ms  max=32.95 ms
+run 2: p50=4.86 ms  p95=5.57 ms  max=6.27 ms
+run 3: p50=5.02 ms  p95=5.69 ms  max=12.97 ms
+median p95 = 5.69 ms (limit 200.0 ms) -> PASS
