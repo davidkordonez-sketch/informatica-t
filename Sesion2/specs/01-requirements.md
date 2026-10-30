@@ -114,7 +114,7 @@ Dijkstra exige pesos **no negativos**; con pesos negativos la garantía de optim
 
 ## 4. Requisitos funcionales
 
-Prioridad **Alta (Must)** para todos. Formato de criterios: *Dado / Cuando / Entonces*. Los casos `TC-xx` están definidos en `06-test-spec.md`; los `RA-xx` son puntos de la revisión arquitectónica manual (`06` §5).
+Prioridad **Alta (Must)** para todos. Formato de criterios: *Dado / Cuando / Entonces*. Los casos `TC-xx` están definidos en `06-test-specification.md`; los `RA-xx` son puntos de la revisión arquitectónica manual (`06` §5).
 
 ### FR-01 — Cargar la topología desde JSON mediante un DAO
 - **Historia de usuario:** Como Controller SDN, quiero cargar la topología desde un archivo JSON a través de `TopologyDAO` para separar el almacenamiento de la lógica del sistema.
@@ -148,7 +148,7 @@ Prioridad **Alta (Must)** para todos. Formato de criterios: *Dado / Cuando / Ent
 
 | ID | Criterio de aceptación | Prueba |
 |---|---|---|
-| AC-03.1 | Dada la topología de referencia (`06-test-spec.md`), cuando se consulta A→D con `delay`, entonces la ruta es `[A,B,D]` con costo 20. | TC-01 |
+| AC-03.1 | Dada la topología de referencia (`06-test-specification.md`), cuando se consulta A→D con `delay`, entonces la ruta es `[A,B,D]` con costo 20. | TC-01 |
 | AC-03.2 | Dado `src == dst`, entonces la ruta es `[src]` con costo 0. | TC-01 |
 | AC-03.3 | Dado un destino aislado (F), entonces el resultado es `ROUTE_NOT_FOUND`. | TC-07, TC-11 |
 | AC-03.4 | La lógica de Dijkstra reside únicamente en `RoutingService`, no en controladores HTTP. | TC-23 (sustitución), TC-12 y RA-02 (inspección) |
@@ -356,3 +356,4 @@ El enunciado exige registrar todo cambio de diseño posterior a la congelación 
 | CH-07 | 2026-10-26 | SPDR-07 (menor) | La trazabilidad clasifica cada vínculo como **primaria**, **de soporte** o **inspección arquitectónica**; se corrige FR-01 ↔ TC-13 (pasa a inspección) y se agrega evidencia primaria (TC-17 ampliado, TC-21). | Vínculos requisito–prueba débiles. | `01` NFR-08, tablas AC; `05` §3; `06` §3 |
 | CH-08 | 2026-10-26 | SPDR-08 (menor) | Cronograma de la Sesión 2 con entregables mínimos obligatorios, pruebas por nivel (obligatoria / recomendada / extensión), hitos con reglas de recorte y 12 min reservados para corregir defectos. | Cronograma optimista. | `05` §1, §6; `06` §2 |
 | CH-09 | 2026-10-26 | Revisión interna | Se corrige el nombre del archivo `01-requirements (1).md` → `01-requirements.md`; se elimina el modelo `Node` (no existía en el diagrama de clases) de `02` §4–5; se definen los esquemas `LinkStateResponse`, `TopologyResponse` y `HealthResponse` que se usaban sin declararse; se crea esta sección §9, referenciada por `04` y `05` pero inexistente. | Inconsistencias detectadas al aplicar las correcciones. | `01`, `02`, `04`, `05` |
+| CH-10 | 2026-10-29 | Revisión de entregables | Las especificaciones pasan de `Informatica3/Informatica3/` a `Sesion2/specs/` y `06-test-spec.md` se renombra `06-test-specification.md`, como pide el enunciado. Sin cambios de contenido en requisitos, diseño, API ni pruebas. | Nombres y ubicación exigidos en "Required repository deliverables". | `01`, `03`, `docs/01-scrum-requirements.md`, `docs/02-test-plan.md`, `docs/03-system-architecture.md`, `docs/architecture-review.md`, `prompts-session2.md`, `README.md` |

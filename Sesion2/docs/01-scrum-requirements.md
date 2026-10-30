@@ -1,6 +1,6 @@
 # Recolección de Requisitos basada en Scrum
 
-*Documento de la Sesión 2 elaborado con la estructura de la plantilla "Scrum-Based Requirements Collection Template". Fuente de detalle: `Informatica3/Informatica3/01-requirements.md` (v1.1).*
+*Documento de la Sesión 2 elaborado con la estructura de la plantilla "Scrum-Based Requirements Collection Template". Fuente de detalle: `specs/01-requirements.md` (v1.1).*
 
 | Campo | Descripción |
 |---|---|
@@ -115,7 +115,7 @@ Se organizan tres sprints. El Sprint 1 corresponde a la Sesión 1; los Sprints 2
 | S1-01 | FR-01…FR-10, NFR-01…NFR-12 | `01-requirements.md` | A y B | 30 min | Hecho |
 | S1-02 | NFR-01, NFR-02 | `02-static-architecture.md` y `03-dynamic-architecture.md` | A y B | 35 min | Hecho |
 | S1-03 | FR-05 | `04-api-contract.md` | A y B | 10 min | Hecho |
-| S1-04 | NFR-08 | `05-implementation-plan.md` y `06-test-spec.md` | A y B | 15 min | Hecho |
+| S1-04 | NFR-08 | `05-implementation-plan.md` y `06-test-specification.md` | A y B | 15 min | Hecho |
 
 **Sprint 2 — Implementación (Sesión 2, minutos 0 a 70)**
 

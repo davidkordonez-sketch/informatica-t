@@ -1,6 +1,6 @@
 # Revisión arquitectónica RA-01…RA-10 (tarea T-18)
 
-Lista definida en `Informatica3/Informatica3/06-test-spec.md` §5. Procedimiento: **A revisa el Router y B revisa el Controller**, comparando el código con `02-static-architecture.md`.
+Lista definida en `specs/06-test-specification.md` §5. Procedimiento: **A revisa el Router y B revisa el Controller**, comparando el código con `02-static-architecture.md`.
 
 > **Estado:** borrador preparado con asistencia de IA a partir del código entregado. **Cada estudiante debe abrir los archivos indicados, confirmar o corregir cada fila y completar la columna "Revisor".** No se debe dar por revisado lo que no hayan leído ustedes mismos.
 

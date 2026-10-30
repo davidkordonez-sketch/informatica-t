@@ -1,6 +1,6 @@
 # Documento de Arquitectura y Requisitos del Sistema
 
-*Documento de la Sesión 2 elaborado con la estructura de la plantilla "System Architecture and Requirements Document Template". Detalle completo: `Informatica3/Informatica3/02-static-architecture.md`, `03-dynamic-architecture.md` y `04-api-contract.md` (v1.1).*
+*Documento de la Sesión 2 elaborado con la estructura de la plantilla "System Architecture and Requirements Document Template". Detalle completo: `specs/02-static-architecture.md`, `03-dynamic-architecture.md` y `04-api-contract.md` (v1.1).*
 
 | Campo | Descripción |
 |---|---|

@@ -2,7 +2,7 @@
 
 Versión 1.1 (2026-10-26). Cambios respecto a 1.0 registrados en `01-requirements.md` §9 (CH-01, CH-02, CH-03, CH-04).
 
-Topología de referencia usada en los ejemplos: la de `06-test-spec.md` (nodos A–F; A→D por `delay` = `[A,B,D]`, costo 20).
+Topología de referencia usada en los ejemplos: la de `06-test-specification.md` (nodos A–F; A→D por `delay` = `[A,B,D]`, costo 20).
 
 **Convenciones de los diagramas (SPDR-04).**
 - Todo participante es una clase de `02-static-architecture.md` y se nombra `Clase (App)`, por ejemplo `RouteController (Controller)`. Solo los actores externos (Cliente, Administrador) no son clases.

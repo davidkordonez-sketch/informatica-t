@@ -1,6 +1,6 @@
 # Plan de Pruebas de Requisitos
 
-*Documento de la Sesión 2 elaborado con la estructura de la plantilla "Requirements Test Plan Template". Detalle técnico de cada caso: `Informatica3/Informatica3/06-test-spec.md` (v1.1).*
+*Documento de la Sesión 2 elaborado con la estructura de la plantilla "Requirements Test Plan Template". Detalle técnico de cada caso: `specs/06-test-specification.md` (v1.1).*
 
 | Campo | Descripción |
 |---|---|

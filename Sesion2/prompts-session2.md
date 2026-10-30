@@ -36,7 +36,7 @@ El enunciado pide, entre las dos sesiones, **al menos 6 prompts sustanciales** c
 |---|---|
 | **Técnica** | Prompt estructurado: cada prueba se pide con su ID, escenario y resultado esperado tomados literalmente de `06` §2 |
 | **Objetivo** | Implementar las 26 pruebas con los marcadores de nivel (obligatoria / recomendada / extensión) |
-| **Prompt** | Parte del mismo pedido de P2-02; las expectativas se copiaron de la tabla de `06-test-spec.md` |
+| **Prompt** | Parte del mismo pedido de P2-02; las expectativas se copiaron de la tabla de `06-test-specification.md` |
 | **Salida relevante** | 73 pruebas (con parametrizaciones) en `tests/`; `pytest.ini` con marcadores; fakes compartidos en `tests/fakes.py`. |
 | **Problema encontrado** | **Error de la IA en una prueba:** TC-26 (escritura parcial) llamaba dos veces al DAO roto sobre el mismo archivo y esperaba 1 línea corrupta; el resultado real era 2. El DAO estaba bien; la prueba estaba mal. |
 | **Corrección** | La segunda llamada se hace sobre otro archivo, de modo que el escenario coincide con el descrito en `06` (un fragmento + una escritura buena). Después: 73/73 en verde. |

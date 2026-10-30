@@ -5,7 +5,7 @@ Simulación SDN a nivel de aplicación con dos procesos Python independientes qu
 - **Controller** (`controller/`, puerto 8000): carga la topología desde JSON mediante `TopologyDAO`, administra el estado de los enlaces, calcula rutas con Dijkstra (NetworkX) y las expone por REST.
 - **Router** (`router/`, puerto 8001): recibe paquetes simulados, **pide la ruta al Controller** (nunca la calcula), simula el reenvío salto a salto y registra cada resultado con `ForwardingLogDAO`.
 
-Especificaciones de la Sesión 1 (v1.1): `../Informatica3/Informatica3/01…06` y su registro de cambios en `01-requirements.md` §9.
+Especificaciones de la Sesión 1 (v1.1): [`specs/`](specs/) (`01-requirements.md` … `06-test-specification.md`) y su registro de cambios en `specs/01-requirements.md` §9.
 Documentos de la Sesión 2 (plantillas del profesor): `docs/01-scrum-requirements.md`, `docs/02-test-plan.md`, `docs/03-system-architecture.md`.
 
 ## 1. Estructura
